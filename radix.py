@@ -63,17 +63,7 @@ class RadixTree(object):
             visit(edge.label)
             self._traversePreOrder(edge.node, visit)
 
-    # TODO: Make this pretty printed, like the "tree" program
-    def diagram(self):
-        items = []
-        if not self.empty():
-            self._traversePreOrder(self.root, items.append)
-        return items
-
-    def empty(self):
-        return self.size == 0
-
-    def contains(self, key):
+    def _search(self, key):
         # start at root, keep track of the number of characters matched / elements found
         # make sure we only go as far as the key length
         node = self.root
@@ -89,38 +79,38 @@ class RadixTree(object):
                 if self._isPrefix(suffix, edge.label):
                     nextEdge = edge 
                     break
-
             if nextEdge is None:
                 break 
             else:
                 node = nextEdge.node
                 elementsFound += len(nextEdge.label)
-        return elementsFound == keyLength
+        return (node, elementsFound)
 
+    # TODO: Make this pretty printed, like the "tree" program
+    def diagram(self):
+        items = []
+        if not self.empty():
+            self._traversePreOrder(self.root, items.append)
+        return items
+
+    def empty(self):
+        return self.size == 0
+
+    def contains(self, key):
+        node, elementsFound = self._search(key)
+        return elementsFound == len(key)
+
+    # return the data from the node with the closest match to the key
     def lookup(self, key):
-        pass
+        node, elementsFound = self._search(key)
+        if node is self.root:
+            raise KeyError('No mapping found for {}'.format(key))
+        return node.data
 
     def insert(self, key, data=None):
-        node = self.root
-        elementsFound = 0
-        keyLength = len(key)
-        # traverse through the tree and find the most appropriate node
-        while node.isLeaf() == False and elementsFound < keyLength:
-            nextEdge = None
-            # match only the relevant parts of the key
-            suffix = key[elementsFound:]
-            # look through all the node's edges for a prefix match
-            for edge in node.edges:
-                if self._isPrefix(suffix, edge.label):
-                    nextEdge = edge 
-                    break
-            if nextEdge is None:
-                break 
-            else:
-                node = nextEdge.node
-                elementsFound += len(nextEdge.label)
+        node, elementsFound = self._search(key)
         # Case 1: We hit an exact node!
-        if elementsFound == keyLength:
+        if elementsFound == len(key):
             if data is not None:
                 node.data.append(data)
             return
@@ -176,7 +166,6 @@ class RadixTree(object):
             node.edges.append(newEdge)
             self.size += 1
             return
-
 
     def delete(self):
         pass
