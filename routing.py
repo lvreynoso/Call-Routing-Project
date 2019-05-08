@@ -41,9 +41,19 @@ if __name__ == '__main__':
         for line in datafile:
             sys.stdout.write(next(spinner))
             sys.stdout.flush()
-            entry = line.split(',')
+            entry = line.rstrip('\n').split(',')
             tree.insert(entry[0], entry[1])
             sys.stdout.write('\b')
     sys.stdout.write('Done.\n')
     sys.stdout.flush()
     print('Memory usage: {} MiB'.format(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss >> 20))
+
+    # start a shell
+    print('\nInteractive call routing shell.\nType a standardized phone number, beginning with \'+\' to lookup its routing cost.\nType \'exit\' to end the session.')
+    call = ''
+    while call != 'exit':
+        call = input(">>> ")
+        if call == 'exit':
+            break
+        else:
+            print(routeCall(call, tree))
