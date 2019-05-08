@@ -49,7 +49,7 @@ def shell(data):
         if call == 'exit':
             break
         else:
-            print(routeCall(call, rt))
+            print(routeCall(call, data))
 
 def usage():
     helpString = """
