@@ -22,7 +22,7 @@ def routeCall(number, data):
 def loadRoutes(path):
     tree = RadixTree()
     # load call routing data into Radix Tree
-    # 1,000,000 routes uses 522 MiB
+    # 1,000,000 routes now only uses 372 MiB!
     spinner = itertools.cycle('-\\|/')
     print('Loading call routing data...', end='')
     count = 0

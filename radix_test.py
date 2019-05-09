@@ -96,7 +96,7 @@ class RadixTreeTest(unittest.TestCase):
         with self.assertRaises(KeyError):
             rt.lookup('1800CALLATT')
 
-    def test_lookup_with_unspecified_routes(self):
+    def test_lookup_with_more_specific_routes(self):
         rt = RadixTree()
         rt.insert('+86153', '0.84')
         rt.insert('+449275049', '0.49')

@@ -2,25 +2,19 @@
 
 class RadixNode(object):
     """docstring for RadixNode"""
-    def __init__(self):
-        self.data = []
-        self.edges = []
-
-    def isLeaf(self):
-        return len(self.edges) == 0
-
-
-class RadixEdge(object):
-    """docstring for RadixEdge"""
     def __init__(self, label):
         self.label = label
-        self.node = RadixNode()
+        self.data = []
+        self.children = []
+
+    def isLeaf(self):
+        return len(self.children) == 0
 
  
 class RadixTree(object):
     """docstring for RadixTree"""
     def __init__(self, items=None):
-        self.root = RadixNode()
+        self.root = RadixNode('__ROOT__')
         self.size = 0
         if items is not None:
             for item in items:
@@ -42,9 +36,6 @@ class RadixTree(object):
                 isPrefix = False
                 break
         return isPrefix
-
-    def _sharesStem(self, suffix, edgeLabel):
-        return suffix[0] == edgeLabel[0]
 
     def _matchDepth(self, suffix, edgeLabel):
         depth = 0
@@ -71,19 +62,19 @@ class RadixTree(object):
         keyLength = len(key)
         # traverse through the tree. find edge, find next edge, rinse, repeat
         while node.isLeaf() == False and elementsFound < keyLength:
-            nextEdge = None
+            nextNode = None
             # match only the relevant parts of the key
             suffix = key[elementsFound:]
             # look through all the node's edges for a prefix match
-            for edge in node.edges:
-                if self._isPrefix(suffix, edge.label):
-                    nextEdge = edge 
+            for child in node.children:
+                if self._isPrefix(suffix, child.label):
+                    nextNode = child 
                     break
-            if nextEdge is None:
+            if nextNode is None:
                 break 
             else:
-                node = nextEdge.node
-                elementsFound += len(nextEdge.label)
+                node = nextNode
+                elementsFound += len(nextNode.label)
         return (node, elementsFound)
 
     # TODO: Make this pretty printed, like the "tree" program
@@ -114,31 +105,33 @@ class RadixTree(object):
             if data is not None:
                 node.data.append(data)
             return
-        # look for a candidateEdge
+        # look for a candidate edge/node
         candidateEdge = None
         suffix = key[elementsFound:]
-        for edge in node.edges:
-            if self._sharesStem(edge.label, suffix):
-                candidateEdge = edge
+        depth = 0
+        for child in node.children:
+            childMatchDepth = self._matchDepth(suffix, child.label)
+            if childMatchDepth > 0:
+                candidateEdge = child
+                depth = childMatchDepth
                 break
-        # construct our new edge
-        newEdge = RadixEdge(suffix)
+        # construct our new node
+        newNode = RadixNode(suffix)
         if data is not None:
-            newEdge.node.data.append(data)
+            newNode.data.append(data)
         # Case 2: Need to split an edge in two
         if candidateEdge is not None:
-            depth = self._matchDepth(suffix, candidateEdge.label)
             # trim the old edge to just the unique part:
             candidateEdge.label = candidateEdge.label[depth:]
             # Case 2a: The new suffix is entirely contained within the edge
             # e.g. adding "test" to "tester"
             if depth == len(suffix):
                 # connect the new edge to the node we stopped at
-                node.edges.append(newEdge)
+                node.children.append(newNode)
                 # connect the old edge to our new node
-                newEdge.node.edges.append(candidateEdge)
+                newNode.children.append(candidateEdge)
                 # disconnect the old edge from the old parent
-                node.edges.remove(candidateEdge)
+                node.children.remove(candidateEdge)
                 self.size += 1
                 return
             # Case 2b: The new suffix only contains a partial match to the 
@@ -150,20 +143,20 @@ class RadixTree(object):
             # e.g. adding "team" to "test"
             elif depth < len(suffix):
                 # create shared stem:
-                newStem = RadixEdge(suffix[:depth])
+                newStem = RadixNode(suffix[:depth])
                 # trim the new suffix
-                newEdge.label = newEdge.label[depth:]
+                newNode.label = newNode.label[depth:]
                 # now connect it all together...
-                node.edges.append(newStem)
-                newStem.node.edges.extend([newEdge, candidateEdge])
-                node.edges.remove(candidateEdge)
+                node.children.append(newStem)
+                newStem.children.extend([newNode, candidateEdge])
+                node.children.remove(candidateEdge)
                 self.size += 2
                 return
         # Case 3: The key is longer than the current branch. Simple enough, just
         # add an edge with the rest of the key.
         # e.g. adding "slower" to "slow"
         else:
-            node.edges.append(newEdge)
+            node.children.append(newNode)
             self.size += 1
             return
 
