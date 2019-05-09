@@ -1,68 +1,77 @@
 #!python
 
-from radix import RadixTree
-import sys, itertools, resource
+# from radix import RadixTree
+from hashtable import RoutingTable
+import sys, itertools, resource, csv
 
-def routeCall(number, data):
-    result = []
-    for index in range(len(number)):
-        truncated = number[:len(number) - index]
-        try:
-            result = data.lookup(truncated)
-        except KeyError:
-            break
-        if result != []:
-            break
-    if result != []:
-        result.sort()
-        return (number, result[0])
-    else:
-        return (number, 0)
-
-def loadRoutes(path):
-    tree = RadixTree()
-    # load call routing data into Radix Tree
-    # 1,000,000 routes now only uses 372 MiB!
+def loadRoutes(path, datastore):
     spinner = itertools.cycle('-\\|/')
     print('Loading call routing data...', end='')
     count = 0
-    with open(dataPath) as datafile:
-        for line in datafile:
+    with open(path) as datafile:
+        reader = csv.reader(datafile, delimiter=',')
+        for row in reader:
             sys.stdout.write(next(spinner))
             sys.stdout.flush()
-            entry = line.rstrip('\n').split(',')
-            tree.insert(entry[0], entry[1])
+            datastore.insert(row[0], row[1])
             count += 1
             sys.stdout.write('\b')
     sys.stdout.write('Done.\n')
     sys.stdout.flush()
     print('{} routes processed'.format(count))
+    print('Routing table entries: {}'.format(datastore.size))
     print('Memory usage: {} MiB'.format(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss >> 20))
-    return tree
+
+def priceRoutes(path, datastore):
+    spinner = itertools.cycle('-\\|/')
+    print('Pricing phone numbers...', end='')
+    count = 0
+    results = []
+    with open(path) as datafile:
+        reader = csv.reader(datafile, delimiter=',')
+        for row in reader:
+            sys.stdout.write(next(spinner))
+            sys.stdout.flush()
+            price = datastore.lookup(row[0])
+            results.append((row[0], price))
+            count += 1
+            sys.stdout.write('\b')
+    savePath = ''.join([path[:len(path) - 4], '-priced.txt'])
+    with open(savePath, 'w') as printfile:
+        writer = csv.writer(printfile)
+        writer.writerows(results)
+    sys.stdout.write('Done.\n')
+    sys.stdout.flush()
+    print('Wrote {} prices to {}'.format(count, savePath))
 
 def shell(data):
     # start a shell
-    print('\nInteractive call routing shell.\nType a standardized phone number, beginning with \'+\' to lookup its routing cost.\nType \'exit\' to end the session.')
-    call = ''
-    while call != 'exit':
-        call = input(">>> ")
-        if call == 'exit':
-            break
-        else:
-            print(routeCall(call, data))
-
-def usage():
-    helpString = """
-    Usage: python3 radix.py path/to/routing/data path/to/call/data
+    instructions = """
+    Interactive call routing shell.
+    Type a standardized phone number, beginning with \'+\' to lookup its routing cost.
+    Type 'load path/to/routing/costs' to load a CSV table of routing costs into memory.
+    Type 'price path/to/phone/numbers' to price a CSV table of phone numbers.
+    Type \'exit\' to end the session.
     """
-    print(helpString)
-    exit()
+    print(instructions)
+    command = ''
+    while command != 'exit':
+        command = input(">>> ")
+        commands = command.rstrip('\n').split(' ')
+        if commands[0] == 'exit':
+            break
+        elif commands[0] == 'load':
+            for path in commands[1:]:
+                loadRoutes(path, data)
+        elif commands[0] == 'price':
+            for path in commands[1:]:
+                priceRoutes(path, data)
+        else:
+            print(commands[0], data.lookup(commands[0]))
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        usage()
-    dataPath = sys.argv[1]
-    # callPath = sys.argv[2]
-    routes = loadRoutes(dataPath)
-    shell(routes)
-    
+    table = RoutingTable()
+    if len(sys.argv) > 1:
+        for arg in sys.argv[1:]:
+            loadRoutes(arg, table)
+    shell(table)

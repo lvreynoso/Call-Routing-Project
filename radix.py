@@ -93,10 +93,19 @@ class RadixTree(object):
 
     # return the data from the node with the closest match to the key
     def lookup(self, key):
-        node, elementsFound = self._search(key)
-        if node is self.root:
-            raise KeyError('No mapping found for {}'.format(key))
-        return node.data
+        result = []
+        for index in range(len(key)):
+            truncated = key[:len(key) - index]
+            node, elementsFound = self._search(truncated)
+            if node is self.root:
+                return '0'
+            elif node.data != []:
+                result = node.data
+                break
+        if result == []:
+            return '0'
+        sortedResult = sorted(result)
+        return sortedResult[0]
 
     def insert(self, key, data=None):
         node, elementsFound = self._search(key)
