@@ -2,7 +2,7 @@
 
 # from radix import RadixTree
 from hashtable import RoutingTable
-import sys, itertools, resource, csv
+import sys, itertools, resource, csv, pickle
 
 def loadRoutes(path, datastore):
     spinner = itertools.cycle('-\\|/')
@@ -66,11 +66,39 @@ def shell(data):
         elif commands[0] == 'price':
             for path in commands[1:]:
                 priceRoutes(path, data)
+        elif commands[0] == 'save':
+            saveCache(data)
         else:
             print(commands[0], data.lookup(commands[0]))
 
+def loadCache():
+    try:
+        with open('__pycache__/routingcache', 'rb') as cachefile:
+            sys.stdout.write('Loading saved routing table...')
+            sys.stdout.flush()
+            data = pickle.load(cachefile)
+            sys.stdout.write('Done.\n')
+            sys.stdout.flush()
+            print('Routing table entries: {}'.format(data.size))
+            print('Memory usage: {} MiB'.format(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss >> 20))
+            return data
+    except Exception as e:
+        print('Error loading saved routing table: {}'.format(e))
+        return None
+
+def saveCache(data):
+    try:
+        with open('__pycache__/routingcache', 'wb') as cachefile:
+            pickle.dump(data, cachefile)
+            print('Routing table saved successfully!')
+    except Exception as e:
+        print('Unable to save routing table: {}'.format(e))
+    return
+
 if __name__ == '__main__':
-    table = RoutingTable()
+    table = loadCache()
+    if table is None:
+        table = RoutingTable()
     # table = RadixTree()
     if len(sys.argv) > 1:
         for arg in sys.argv[1:]:
