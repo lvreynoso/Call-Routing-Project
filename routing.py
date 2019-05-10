@@ -71,6 +71,7 @@ def shell(data):
 
 if __name__ == '__main__':
     table = RoutingTable()
+    # table = RadixTree()
     if len(sys.argv) > 1:
         for arg in sys.argv[1:]:
             loadRoutes(arg, table)

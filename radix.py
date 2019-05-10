@@ -4,8 +4,8 @@ class RadixNode(object):
     """docstring for RadixNode"""
     def __init__(self, label):
         self.label = label
-        self.data = []
-        self.children = []
+        self.data = tuple()
+        self.children = tuple()
 
     def isLeaf(self):
         return len(self.children) == 0
@@ -50,9 +50,9 @@ class RadixTree(object):
 
 
     def _traversePreOrder(self, node, visit):
-        for edge in node.edges:
-            visit(edge.label)
-            self._traversePreOrder(edge.node, visit)
+        for child in node.children:
+            visit(child.label)
+            self._traversePreOrder(child, visit)
 
     def _search(self, key):
         # start at root, keep track of the number of characters matched / elements found
@@ -93,16 +93,16 @@ class RadixTree(object):
 
     # return the data from the node with the closest match to the key
     def lookup(self, key):
-        result = []
+        result = tuple()
         for index in range(len(key)):
             truncated = key[:len(key) - index]
             node, elementsFound = self._search(truncated)
             if node is self.root:
                 return '0'
-            elif node.data != []:
+            elif node.data != tuple():
                 result = node.data
                 break
-        if result == []:
+        if result == tuple():
             return '0'
         sortedResult = sorted(result)
         return sortedResult[0]
@@ -112,7 +112,9 @@ class RadixTree(object):
         # Case 1: We hit an exact node!
         if elementsFound == len(key):
             if data is not None:
-                node.data.append(data)
+                entry = list(node.data)
+                entry.append(data)
+                node.data = tuple(entry)
             return
         # look for a candidate edge/node
         candidateEdge = None
@@ -127,7 +129,7 @@ class RadixTree(object):
         # construct our new node
         newNode = RadixNode(suffix)
         if data is not None:
-            newNode.data.append(data)
+            newNode.data = (data,)
         # Case 2: Need to split an edge in two
         if candidateEdge is not None:
             # trim the old edge to just the unique part:
@@ -135,12 +137,14 @@ class RadixTree(object):
             # Case 2a: The new suffix is entirely contained within the edge
             # e.g. adding "test" to "tester"
             if depth == len(suffix):
-                # connect the new edge to the node we stopped at
-                node.children.append(newNode)
-                # connect the old edge to our new node
-                newNode.children.append(candidateEdge)
+                nodeChildren = list(node.children)
                 # disconnect the old edge from the old parent
-                node.children.remove(candidateEdge)
+                nodeChildren.remove(candidateEdge)
+                # connect the new edge to the node we stopped at
+                nodeChildren.append(newNode)
+                node.children = tuple(nodeChildren)
+                # connect the old edge to our new node
+                newNode.children = (candidateEdge,)
                 self.size += 1
                 return
             # Case 2b: The new suffix only contains a partial match to the 
@@ -156,16 +160,22 @@ class RadixTree(object):
                 # trim the new suffix
                 newNode.label = newNode.label[depth:]
                 # now connect it all together...
-                node.children.append(newStem)
-                newStem.children.extend([newNode, candidateEdge])
-                node.children.remove(candidateEdge)
+                nodeChildren = list(node.children)
+                # disconnect the old edge from the old parent
+                nodeChildren.remove(candidateEdge)
+                # connect the new stem to the node we stopped at
+                nodeChildren.append(newStem)
+                node.children = tuple(nodeChildren)
+                newStem.children = (newNode, candidateEdge)
                 self.size += 2
                 return
         # Case 3: The key is longer than the current branch. Simple enough, just
         # add an edge with the rest of the key.
         # e.g. adding "slower" to "slow"
         else:
-            node.children.append(newNode)
+            nodeChildren = list(node.children)
+            nodeChildren.append(newNode)
+            node.children = tuple(nodeChildren)
             self.size += 1
             return
 

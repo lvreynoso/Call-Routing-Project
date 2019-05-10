@@ -88,13 +88,12 @@ class RadixTreeTest(unittest.TestCase):
         rt.insert('+8130', '0.68')
         rt.insert('+4928843955', '0.40')
         rt.insert('+449187847', '0.48')
-        assert rt.lookup('+86153') == ['0.84']
-        assert rt.lookup('+449275049') == ['0.49']
-        assert rt.lookup('+8130') == ['0.68']
-        assert rt.lookup('+4928843955') == ['0.40']
-        assert rt.lookup('+449187847') == ['0.48']
-        with self.assertRaises(KeyError):
-            rt.lookup('1800CALLATT')
+        assert rt.lookup('+86153') == '0.84'
+        assert rt.lookup('+449275049') == '0.49'
+        assert rt.lookup('+8130') == '0.68'
+        assert rt.lookup('+4928843955') == '0.40'
+        assert rt.lookup('+449187847') == '0.48'
+        assert rt.lookup('1800CALLATT') == '0'
 
     def test_lookup_with_more_specific_routes(self):
         rt = RadixTree()
@@ -103,11 +102,11 @@ class RadixTreeTest(unittest.TestCase):
         rt.insert('+8130', '0.68')
         rt.insert('+4928843955', '0.40')
         rt.insert('+449187847', '0.48')
-        assert rt.lookup('+861532527') == ['0.84']
-        assert rt.lookup('+449275049881') == ['0.49']
-        assert rt.lookup('+813077489') == ['0.68']
-        assert rt.lookup('+492884395520') == ['0.40']
-        assert rt.lookup('+449187847610') == ['0.48']
+        assert rt.lookup('+861532527') == '0.84'
+        assert rt.lookup('+449275049881') == '0.49'
+        assert rt.lookup('+813077489') == '0.68'
+        assert rt.lookup('+492884395520') == '0.40'
+        assert rt.lookup('+449187847610') == '0.48'
 
 
 

@@ -14,10 +14,10 @@ class RoutingTable(object):
 
     def insert(self, key, data=None):
         if key in self.table:
-            entry = list(self.table[key])
             if data is not None:
+                entry = list(self.table[key])
                 entry.append(data)
-            self.table[key] = tuple(entry)
+                self.table[key] = tuple(entry)
         else:
             self.table[key] = (data,)
             self.size += 1
