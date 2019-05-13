@@ -1,6 +1,7 @@
 #!python
 
 class RadixNode(object):
+    __slots__ = ['label', 'data', 'children']
     """docstring for RadixNode"""
     def __init__(self, label):
         self.label = label
@@ -94,15 +95,16 @@ class RadixTree(object):
     # return the data from the node with the closest match to the key
     def lookup(self, key):
         result = tuple()
+        empty = tuple()
         for index in range(len(key)):
             truncated = key[:len(key) - index]
             node, elementsFound = self._search(truncated)
             if node is self.root:
                 return '0'
-            elif node.data != tuple():
+            elif node.data != empty:
                 result = node.data
                 break
-        if result == tuple():
+        if result == empty:
             return '0'
         sortedResult = sorted(result)
         return sortedResult[0]

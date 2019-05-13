@@ -1,6 +1,6 @@
 #!python
 
-# from radix import RadixTree
+from radix import RadixTree
 from hashtable import RoutingTable
 import sys, itertools, resource, csv, pickle
 
@@ -103,10 +103,14 @@ def saveCache(data):
     return
 
 if __name__ == '__main__':
-    table = loadCache()
-    if table is None:
-        table = RoutingTable()
-    # table = RadixTree()
+    # Load from cache
+    # table = loadCache()
+    # if table is None:
+    #     table = RoutingTable()
+    #     # table = RadixTree()
+    # Clean load
+    table = RadixTree()
+    # table = RoutingTable()
     if len(sys.argv) > 1:
         for arg in sys.argv[1:]:
             loadRoutes(arg, table)
