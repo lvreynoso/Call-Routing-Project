@@ -6,18 +6,20 @@ import sys, itertools, resource, csv, pickle
 
 def loadRoutes(path, datastore):
     try:
-        spinner = itertools.cycle('-\\|/')
-        print('Loading call routing data...', end='')
+        # spinner = itertools.cycle('-\\|/')
+        print('Loading call routing data...')
         count = 0
         with open(path) as datafile:
             reader = csv.reader(datafile, delimiter=',')
             for row in reader:
-                sys.stdout.write(next(spinner))
+                loadingString = f'Prefix: {row[0]}, Cost: {row[1]}'
+                sys.stdout.write(loadingString)
                 sys.stdout.flush()
                 datastore.insert(row[0], row[1])
                 count += 1
-                sys.stdout.write('\b')
-        sys.stdout.write('Done.\n')
+                sys.stdout.write('\b' * len(loadingString))
+                sys.stdout.flush()
+        sys.stdout.write('\nDone.\n')
         sys.stdout.flush()
         print('{} routes processed'.format(count))
         print('Routing table entries: {}'.format(datastore.size))
@@ -90,7 +92,7 @@ def loadCache():
             print('Memory usage: {} MiB'.format(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss >> 20))
             return data
     except Exception as e:
-        print('Error loading saved routing table: {}'.format(e))
+        print('No saved routing table found')
         return None
 
 def saveCache(data):
