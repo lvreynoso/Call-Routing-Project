@@ -6,22 +6,15 @@ import sys, itertools, resource, csv, pickle
 
 def loadRoutes(path, datastore):
     try:
-        # spinner = itertools.cycle('-\\|/')
-        print('Loading call routing data...')
         count = 0
         with open(path) as datafile:
             reader = csv.reader(datafile, delimiter=',')
             for row in reader:
-                loadingString = f'Prefix: {row[0]}, Cost: {row[1]}'
-                sys.stdout.write(loadingString)
-                sys.stdout.flush()
                 datastore.insert(row[0], row[1])
                 count += 1
-                sys.stdout.write('\b' * len(loadingString))
-                sys.stdout.flush()
-        sys.stdout.write('\nDone.\n')
+                print(f'\rLoading call routing data...{count} routes processed.', end='')
+        sys.stdout.write('\n')
         sys.stdout.flush()
-        print('{} routes processed'.format(count))
         print('Routing table entries: {}'.format(datastore.size))
         print('Memory usage: {} MiB'.format(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss >> 20))
     except Exception as e:
@@ -30,26 +23,22 @@ def loadRoutes(path, datastore):
 
 def priceRoutes(path, datastore):
     try:
-        spinner = itertools.cycle('-\\|/')
-        print('Pricing phone numbers...', end='')
         count = 0
         results = []
         with open(path) as datafile:
             reader = csv.reader(datafile, delimiter=',')
             for row in reader:
-                sys.stdout.write(next(spinner))
-                sys.stdout.flush()
                 price = datastore.lookup(row[0])
                 results.append((row[0], price))
                 count += 1
-                sys.stdout.write('\b')
+                print(f'\rPricing phone numbers...{count} processed.', end='')
+        sys.stdout.write('\nWriting to file...')
         savePath = ''.join([path[:len(path) - 4], '-priced.txt'])
         with open(savePath, 'w') as printfile:
             writer = csv.writer(printfile)
             writer.writerows(results)
-        sys.stdout.write('Done.\n')
         sys.stdout.flush()
-        print('Wrote {} prices to {}'.format(count, savePath))
+        print('wrote {} prices to {}'.format(count, savePath))
     except Exception as e:
         print('Unable to price routes to {}: {}'.format(path, e))
 
@@ -58,9 +47,10 @@ def shell(data):
     instructions = """
     Interactive call routing shell.
     Type a standardized phone number, beginning with \'+\' to lookup its routing cost.
-    Type 'load path/to/routing/costs' to load a CSV table of routing costs into memory.
-    Type 'price path/to/phone/numbers' to price a CSV table of phone numbers.
-    Type \'exit\' to end the session.
+    'load path/to/routing/costs' to load a CSV table of routing costs into memory.
+    'price path/to/phone/numbers' to price a CSV table of phone numbers.
+    'save' to save the current routing table to disk. 
+    'exit' to end the session.
     """
     print(instructions)
     command = ''
@@ -68,6 +58,7 @@ def shell(data):
         command = input(">>> ")
         commands = command.rstrip('\n').split(' ')
         if commands[0] == 'exit':
+            print('Cleaning up...')
             break
         elif commands[0] == 'load':
             for path in commands[1:]:
@@ -81,13 +72,11 @@ def shell(data):
             print(commands[0], data.lookup(commands[0]))
 
 def loadCache():
+    print('\rLoading routing table from disk...', end='')
     try:
         with open('__pycache__/routingcache', 'rb') as cachefile:
-            sys.stdout.write('Loading saved routing table...')
-            sys.stdout.flush()
             data = pickle.load(cachefile)
-            sys.stdout.write('Done.\n')
-            sys.stdout.flush()
+            print('Done.')
             print('Routing table entries: {}'.format(data.size))
             print('Memory usage: {} MiB'.format(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss >> 20))
             return data
@@ -96,6 +85,7 @@ def loadCache():
         return None
 
 def saveCache(data):
+    print('\rSaving routing table to disk...', end='')
     try:
         with open('__pycache__/routingcache', 'wb') as cachefile:
             pickle.dump(data, cachefile)
