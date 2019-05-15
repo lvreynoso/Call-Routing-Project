@@ -1,7 +1,7 @@
 # Call-Routing-Project
-###By Lucia Reynoso and Anisha Jain 
+### By Lucia Reynoso and Anisha Jain 
 
-###Final project for Make School's Data Structures and Algorithms Class
+### Final project for Make School's Data Structures and Algorithms Class
 
 
 Note: Data files are not included in github due to file size restrictions. Add your own to see the magic, and change the file names at the bottom of the file.
@@ -91,6 +91,7 @@ Run python3 routing.py
 Follow terminal instructions
 
 ### Cost and Memory usage examples
+![Imgur](https://i.imgur.com/FAP4Uu9.png)
 
 
 ## Scenario 4: High-throughout pricing API
@@ -111,3 +112,4 @@ Run python3 routing.py
 Follow terminal instructions
 
 ### Cost and Memory usage examples
+![Imgur](https://i.imgur.com/iPND6fh.png)
