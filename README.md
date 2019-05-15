@@ -38,7 +38,7 @@ Found cost in 13.056149005889893 seconds
 Memory used: 855.34 mb
 ```
 
-The cost gets way slower for larger files!
+The cost gets too expensive for larger files!
 
 ## Scenario 2: A list of Route Costs to check
 File: scenario2.py
@@ -61,7 +61,7 @@ Found costs in 126.59851789474487 seconds
 Memory used: 119.3 mb
 
 ```
-The cost gets way slower for larger files! This is not a great method :(
+The cost is way too expensive for larger files! This is not a great method :(
 
 But, it gets better ...
 
