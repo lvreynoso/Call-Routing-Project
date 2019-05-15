@@ -27,6 +27,27 @@ class Scenario1Test(unittest.TestCase):
     def test_106thousand(self):
         routes = 'data/route-costs-106000.txt'
 
+class Scenario2Test(unittest.TestCase):
+    
+    def test_init(self):
+        pass
+
+    def test_ten(self):
+        routes = 'data/route-costs-10.txt'
+
+    def test_hundred(self):
+        routes = 'data/route-costs-100.txt'
+        
+    def test_6hundred(self):
+        routes = 'data/route-costs-600.txt'
+    
+    def test_35thousand(self):
+        routes = 'data/route-costs-35000.txt'
+
+    def test_106thousand(self):
+        routes = 'data/route-costs-106000.txt'
+    
+
 if __name__ == '__main__':
     unittest.main()
 
