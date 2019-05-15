@@ -67,6 +67,8 @@ Memory used: 119.3 mb
 ```
 The cost is way too expensive for larger files! This is not a great method :(
 
+Potential improvement for this method: Instead of looping over the file multiple times, add all potential solutions for each phone number to a dictionary when it is found. Then find the best solution for each phone number and return that. This will be faster because it would only loop over the file once.
+
 But, it gets better ...
 
 ### Testing Instructions for the upcoming BETTER solutions:
