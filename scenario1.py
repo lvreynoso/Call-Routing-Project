@@ -30,6 +30,8 @@ def findBestSolution(solutions):
             longestString = route
             bestPrice = cost
 
+    if (len(bestPrice) == 0):
+        return None
     return bestPrice
 
 
