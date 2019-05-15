@@ -1,5 +1,8 @@
 # Call-Routing-Project
-Final project for CS 1.3
+###By Lucia Reynoso and Anisha Jain 
+
+###Final project for Make School's Data Structures and Algorithms Class
+
 
 Note: Data files are not included in github due to file size restrictions. Add your own to see the magic, and change the file names at the bottom of the file.
 
