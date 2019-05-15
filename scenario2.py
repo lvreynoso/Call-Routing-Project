@@ -1,3 +1,4 @@
+import time
 
 # check if prefix is a valid prefix for phoneNumber
 def isPrefix(phoneNumber, prefix):
@@ -16,7 +17,10 @@ def isPrefix(phoneNumber, prefix):
 def findBestSolution(solutions):
     longestString = ''
     bestPrice = ''
-    for route, cost in enumerate(solutions):
+    for i, rc in enumerate(solutions):
+        route = rc[0]
+        cost = rc[1]
+        # print(route, cost)
         # find longer prefix
         if (len(route) > len(longestString)):
             longestString = route
@@ -26,10 +30,10 @@ def findBestSolution(solutions):
             longestString = route
             bestPrice = cost
 
-    return cost
+    return bestPrice
 
 
-def main(routePath, phoneNumber):
+def findCost(routePath, phoneNumber):
    # get all phone numbers -> dict
 #    phoneDict = parsePhoneNumbers(phonePath)
    
@@ -38,13 +42,33 @@ def main(routePath, phoneNumber):
 
     solutions = []
     for line in content.split('\n'):
+        if (len(line) == 0):
+            break
         data = line.split(",")
+        # print(data)
         if (isPrefix(phoneNumber, data[0])):
             solutions.append((data[0], data[1]))
     
     return findBestSolution(solutions)
 
 
+def main(routePath, phonePath):
+    with open(phonePath, 'r') as f:
+        content = f.read()
+    numbers = content.split('\n')
+    
+    for number in numbers:
+        if (len(number) == 0):
+            break
+        print("Find cost for {number}: ".format(number = number))
+        start = time.time()
+        cost = findCost(routePath, number)
+        end = time.time()
+        print("COST = {cost}".format(cost = cost))
+        print("Found cost in {time} seconds".format(time = end-start))
 
 if __name__ == '__main__':
-    main()
+    routePath = 'data/route-costs-10.txt'
+    phonePath = 'data/phone-numbers-3.txt'
+    
+    main(routePath, phonePath)
