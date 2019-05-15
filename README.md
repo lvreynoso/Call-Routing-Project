@@ -86,6 +86,7 @@ if table is None:
 ```
 
 Run python3 routing.py
+Follow terminal instructions
 
 ### Cost and Memory usage examples
 
@@ -105,5 +106,6 @@ if table is None:
 ```
 
 Run python3 routing.py
+Follow terminal instructions
 
 ### Cost and Memory usage examples
