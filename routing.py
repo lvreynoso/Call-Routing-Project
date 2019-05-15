@@ -4,6 +4,9 @@
 from hashtable import RoutingTable
 import sys, itertools, resource, csv, pickle
 
+# loadRoutes() reads a file containing a list of comma separated values 
+# stored as phone-number-route,cost and loads them into the data structure
+# passed by reference as 'datastore'.
 def loadRoutes(path, datastore):
     try:
         count = 0
@@ -21,6 +24,9 @@ def loadRoutes(path, datastore):
         print('Unable to load routes from {}: {}'.format(path, e))
         return Error('loadRouteError')
 
+# priceRoutes() reads a file containing a list of phone numbers in
+# standardized form and writes a list of those phone numbers
+# and their cost to route them to disk as comma separated values.
 def priceRoutes(path, datastore):
     try:
         count = 0
@@ -42,6 +48,8 @@ def priceRoutes(path, datastore):
     except Exception as e:
         print('Unable to price routes to {}: {}'.format(path, e))
 
+# starts an interactive shell that allows the end user to access the other
+# functions in this script from the command line
 def shell(data):
     # start a shell
     instructions = """
@@ -71,6 +79,8 @@ def shell(data):
         else:
             print(commands[0], data.lookup(commands[0]))
 
+# this function loads into memory from disk a pickled data structure 
+# containing routes and their costs
 def loadCache():
     print('\rLoading routing table from disk...', end='')
     try:
@@ -84,6 +94,8 @@ def loadCache():
         print('No saved routing table found')
         return None
 
+# this function saves to disk from memory a pickled data structure 
+# containing routes and their costs
 def saveCache(data):
     print('\rSaving routing table to disk...', end='')
     try:

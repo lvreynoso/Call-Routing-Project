@@ -1,8 +1,19 @@
 #!python
 
 class RadixNode(object):
+    """Each radix node holds three variables:
+    label: a string describing a unique part of longer string
+    encompassed within the tree (the key)
+    data: a tuple containing any data associated with this
+    particular key
+    children: a tuple containing any connections to child radix
+    nodes that are unique strings describing parts of keys
+    longer than the current key, but containing the current key"""
+    # slots magic to cut down on memory usage. basically tells
+    # python that this class will not have any attributes
+    # dynamically added at runtime, so don't make a dictionary
+    # (and thus use up more memory) to support dynamic attributes
     __slots__ = ['label', 'data', 'children']
-    """docstring for RadixNode"""
     def __init__(self, label):
         self.label = label
         self.data = tuple()
@@ -13,7 +24,12 @@ class RadixNode(object):
 
  
 class RadixTree(object):
-    """docstring for RadixTree"""
+    """A radix tree, also known as a compact prefix tree, is similar
+    to a trie but collapses nodes with only one child into one node.
+    In a radix tree, a node represents a unique part of a key; this part
+    may be of varying length. The radix tree written here uses less
+    memory than a simple hash table / dictionary, but unfortunately
+    takes longer to build for this project."""
     def __init__(self, items=None):
         self.root = RadixNode('__ROOT__')
         self.size = 0
@@ -27,17 +43,20 @@ class RadixTree(object):
     def __repr__(self):
         return 'RadixTree({} nodes)'.format(self.size)
 
+    # _isPrefix() is a helper function that compares two strings and 
+    # returns True if the second string is a prefix of the first string,
+    # and False if it is not. A prefix here is defined by the entire 
+    # second string being an exact match for the beginning of the first string.
     def _isPrefix(self, first, second):
-        isPrefix = True 
         for index, character in enumerate(second):
             if index >= len(first):
-                isPrefix = False
-                break
+                return False
             if character != first[index]:
-                isPrefix = False
-                break
-        return isPrefix
+                return False
+        return True
 
+    # _matchDepth() is a helper function that returns how many indices
+    # deep two strings share the same sequence of characters.
     def _matchDepth(self, suffix, edgeLabel):
         depth = 0
         for index, character in enumerate(suffix):
@@ -55,6 +74,11 @@ class RadixTree(object):
             visit(child.label)
             self._traversePreOrder(child, visit)
 
+    # _search() is a helper function that finds the deepest node that matches with
+    # the given key. It returns a tuple with a reference to the node and a number for
+    # how many characters in the key were accounted for in the search. It's up to
+    # whatever function called _search() to figure out if there was an exact match,
+    # or to use the information in different ways.
     def _search(self, key):
         # start at root, keep track of the number of characters matched / elements found
         # make sure we only go as far as the key length
@@ -88,6 +112,8 @@ class RadixTree(object):
     def empty(self):
         return self.size == 0
 
+    # returns True if there is a node that is an exact match for the 
+    # given key, or False if not.
     def contains(self, key):
         node, elementsFound = self._search(key)
         return elementsFound == len(key)
@@ -109,6 +135,9 @@ class RadixTree(object):
         sortedResult = sorted(result)
         return sortedResult[0]
 
+    # insert() inserts a key into a database. If the key is already present,
+    # the function merely adds the given data to the key's node, if data
+    # is given to the function.
     def insert(self, key, data=None):
         node, elementsFound = self._search(key)
         # Case 1: We hit an exact node!
@@ -181,8 +210,9 @@ class RadixTree(object):
             self.size += 1
             return
 
+    # not yet implemented
     def delete(self):
-        pass
+        raise NotImplementedError()
 
 
 def testRadixTree():
