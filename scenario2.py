@@ -13,21 +13,19 @@ def isPrefix(phoneNumber, prefix):
     
     return True
 
-# find the longest prefix, smallest price in solutions array
-# return that price
-# input: (prefix, price)
+# find the price for the longest route with smallest price 
+# in input array containing tuples: (prefix, price)
 def findBestSolution(solutions):
     longestString = ''
     bestPrice = ''
     for i, rc in enumerate(solutions):
         route = rc[0]
         cost = rc[1]
-        # print(route, cost)
-        # find longer prefix
+        # found longer matching route
         if (len(route) > len(longestString)):
             longestString = route
             bestPrice = cost
-        # found better price for same length
+        # found better price for same length route
         elif (len(route) == len(longestString) and bestPrice < cost):
             longestString = route
             bestPrice = cost
@@ -36,46 +34,43 @@ def findBestSolution(solutions):
         return None
     return bestPrice
 
-
+# finds the cost for one phone number
 def findCost(routePath, phoneNumber):
-   # get all phone numbers -> dict
-#    phoneDict = parsePhoneNumbers(phonePath)
-   
     with open(routePath, 'r') as f:
         content = f.read()
 
     solutions = []
+    # loop through all routes data
     for line in content.split('\n'):
         if (len(line) == 0):
             break
-        data = line.split(",")
-        # print(data)
+        data = line.split(",")# split line into [route, cost]
+        # check if the route is a prefix for our phone number
         if (isPrefix(phoneNumber, data[0])):
             solutions.append((data[0], data[1]))
     
     return findBestSolution(solutions)
 
+# writes all solutions to solution file
 def writeToFile(solution):
     path = 'scenario2_solution.txt'
     with open(path, 'w') as f:
         f.write(str(solution))
 
+# find costs for all phone numbers
 def main(routePath, phonePath):
     with open(phonePath, 'r') as f:
         content = f.read()
     numbers = content.split('\n')
     
     solution = ''
+    # loop over all phone numbers
     for number in numbers:
         if (len(number) == 0):
             break
-        # print("Find cost for {number}: ".format(number = number))
-        # start = time.time()
+        # find its best cost
         cost = findCost(routePath, number)
-        # end = time.time()
-        # print("COST = {cost}".format(cost = cost))
-        # print("Found cost in {time} seconds".format(time = end-start))
-
+        # add it to the solution string
         solution += "{number}: {cost}\n".format(number = number, cost = cost)
     
     writeToFile(solution)
@@ -93,17 +88,17 @@ def get_mem():
 if __name__ == '__main__':
     # route paths to try
     # routePath = 'data/route-costs-10.txt'
-    # routePath = 'data/route-costs-100.txt'
+    routePath = 'data/route-costs-100.txt'
     # routePath = 'data/route-costs-600.txt'
     # routePath = 'data/route-costs-35000.txt'
     # routePath = 'data/route-costs-106000.txt'
-    routePath = 'data/route-costs-1000000.txt'
+    # routePath = 'data/route-costs-1000000.txt'
     # routePath = 'data/route-costs-1000000.txt'
 
     # phone paths to true
     # phonePath = 'data/phone-numbers-3.txt'
-    # phonePath = 'data/phone-numbers-10.txt'
-    phonePath = 'data/phone-numbers-100.txt'
+    phonePath = 'data/phone-numbers-10.txt'
+    # phonePath = 'data/phone-numbers-100.txt'
     # phonePath = 'data/phone-numbers-10000.txt'
 
     print("Find cost for {phonePath}: in {path}".format(phonePath = phonePath, path = routePath))

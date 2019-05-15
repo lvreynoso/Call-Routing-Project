@@ -13,12 +13,12 @@ def isPrefix(phoneNumber, prefix):
     
     return True
 
-# find the longest prefix, smallest price in solutions array
-# return that price
-# input: (prefix, price)
+# find the price for the longest route with smallest price 
+# in input array containing tuples: (prefix, price)
 def findBestSolution(solutions):
     longestString = '' # track longest matching route
     bestPrice = '' # track best price for longest matching route
+    
     # loop through all potential cost solutions
     for i, rc in enumerate(solutions):
         route = rc[0]
@@ -54,7 +54,7 @@ def findCost(routePath, phoneNumber):
     
     return findBestSolution(solutions)
 
-
+# test our search for time and memory
 def main(routePath, number):
     print("Find cost for {number}: in {path}".format(number = number, path = routePath))
     start = time.time()
