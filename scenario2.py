@@ -80,6 +80,7 @@ def main(routePath, phonePath):
     
     writeToFile(solution)
 
+# Cite: get_mem from KJ's code
 def get_mem():
     """
     returns current memory usage in mb.
@@ -94,9 +95,9 @@ if __name__ == '__main__':
     # routePath = 'data/route-costs-10.txt'
     # routePath = 'data/route-costs-100.txt'
     # routePath = 'data/route-costs-600.txt'
-    routePath = 'data/route-costs-35000.txt'
+    # routePath = 'data/route-costs-35000.txt'
     # routePath = 'data/route-costs-106000.txt'
-    # routePath = 'data/route-costs-1000000.txt'
+    routePath = 'data/route-costs-1000000.txt'
     # routePath = 'data/route-costs-1000000.txt'
 
     # phone paths to true
@@ -105,9 +106,9 @@ if __name__ == '__main__':
     phonePath = 'data/phone-numbers-100.txt'
     # phonePath = 'data/phone-numbers-10000.txt'
 
-
+    print("Find cost for {phonePath}: in {path}".format(phonePath = phonePath, path = routePath))
     start = time.time()
     main(routePath, phonePath)
     end = time.time()
-    print("It took {time} seconds".format(time = end-start))
+    print("Found costs in {time} seconds".format(time = end-start))
     print("Memory used: {mem} mb".format(mem = get_mem()))

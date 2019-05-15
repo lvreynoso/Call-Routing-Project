@@ -1,4 +1,6 @@
 import time
+import resource
+import platform
 
 # check if prefix is a valid prefix for phoneNumber
 def isPrefix(phoneNumber, prefix):
@@ -54,15 +56,36 @@ def findCost(routePath, phoneNumber):
 
 
 def main(routePath, number):
-    print("Find cost for {number}: ".format(number = number))
+    print("Find cost for {number}: in {path}".format(number = number, path = routePath))
     start = time.time()
     cost = findCost(routePath, number)
     end = time.time()
     print("COST = {cost}".format(cost = cost))
     print("Found cost in {time} seconds".format(time = end-start))
+    print("Memory used: {mem} mb".format(mem = get_mem()))
+
+#Cite: get_mem from KJ's code
+def get_mem():
+    """
+    returns current memory usage in mb.
+    """
+    usage = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    if platform.system() == 'Linux':
+        return round(usage/float(1 << 10), 2)
+    return round(usage/float(1 << 20), 2)
 
 if __name__ == '__main__':
     routePath = 'data/route-costs-10.txt'
     phoneNumber = '+449275049230'
-    
     main(routePath, phoneNumber)
+    print('\n')
+    
+    routePath = 'data/route-costs-106000.txt'
+    phoneNumber = '+449275049230'
+    main(routePath, phoneNumber)
+    print('\n')
+
+    routePath = 'data/route-costs-10000000.txt'
+    phoneNumber = '+449275049230'
+    main(routePath, phoneNumber)
+    print('\n')
