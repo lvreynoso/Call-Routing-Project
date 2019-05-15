@@ -15,13 +15,13 @@ def isPrefix(phoneNumber, prefix):
 # return that price
 # input: (prefix, price)
 def findBestSolution(solutions):
-    longestString = ''
-    bestPrice = ''
+    longestString = '' # track longest matching route
+    bestPrice = '' # track best price for longest matching route
+    # loop through all potential cost solutions
     for i, rc in enumerate(solutions):
         route = rc[0]
         cost = rc[1]
-        # print(route, cost)
-        # find longer prefix
+        # found longest matching route
         if (len(route) > len(longestString)):
             longestString = route
             bestPrice = cost
@@ -36,18 +36,17 @@ def findBestSolution(solutions):
 
 
 def findCost(routePath, phoneNumber):
-   # get all phone numbers -> dict
-#    phoneDict = parsePhoneNumbers(phonePath)
-   
+    # open routes file
     with open(routePath, 'r') as f:
         content = f.read()
 
     solutions = []
+    # loop through all routes data
     for line in content.split('\n'):
         if (len(line) == 0):
             break
-        data = line.split(",")
-        # print(data)
+        data = line.split(",") # split line into [route, cost]
+        # check if the route is a prefix for our phone number
         if (isPrefix(phoneNumber, data[0])):
             solutions.append((data[0], data[1]))
     
